@@ -1,15 +1,19 @@
 const express = require('express');
+const fs = require('fs');
 
 const app = express();
 
-app.get('/', (request, respond) => {
-  respond
-    .status(200)
-    .json({
-      message: 'Robin seorang yang kacak sekali.',
-      reminder: 'sila hati hati dengan dia',
-    });
-  console.log(`user send request`);
+const tours = JSON.parse(
+  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
+);
+app.get('/api/v1/tours', (request, respond) => {
+  respond.status(200).json({
+    status: 'success',
+    result: tours.length,
+    data: {
+      tours: tours,
+    },
+  });
 });
 const port = 3000;
 
