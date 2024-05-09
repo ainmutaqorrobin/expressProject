@@ -55,6 +55,24 @@ app.post('/api/v1/tours', (request, respond) => {
     }
   );
 });
+
+//update tour endpoint
+app.patch('/api/v1/tours/:id', (request, respond) => {
+  console.log(`triggered`);
+  const tour = tours.find((el) => el.id === +request.params.id);
+  if (!tour) {
+    return respond.status(404).json({
+      status: 'Failed',
+      message: 'Could not find and update the tour',
+    });
+  }
+  respond.status(200).json({
+    status: 'success',
+    data: {
+      tour: tour,
+    },
+  });
+});
 const port = 3000;
 
 app.listen(port, () => {
