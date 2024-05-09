@@ -73,6 +73,21 @@ app.patch('/api/v1/tours/:id', (request, respond) => {
     },
   });
 });
+
+//delete tour endpoint
+app.delete('/api/v1/tours/delete/:id', (request, respond) => {
+  const tour = tours.find((el) => el.id === +request.params.id);
+  if (!tour) {
+    return respond.status(404).json({
+      status: 'Failed',
+      message: 'Failed to delete the selected tour',
+    });
+  }
+  respond.status(204).json({
+    status: 'Success',
+    data: null,
+  });
+});
 const port = 3000;
 
 app.listen(port, () => {
