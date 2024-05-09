@@ -8,15 +8,36 @@ app.use(express.json()); //using middleware
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
+
+//get all tours endpoint
 app.get('/api/v1/tours', (request, respond) => {
   respond.status(200).json({
-    status: 'success',
+    status: 'Success',
     result: tours.length,
     data: {
       tours: tours,
     },
   });
 });
+
+//get single tour endpoint
+app.get('/api/v1/tours/:id', (request, respond) => {
+  const tour = tours.find((el) => el.id === +request.params.id);
+  if (!tour) {
+    return respond.status(404).json({
+      status: 'Failed',
+      message: 'Id does not exist in tour',
+    });
+  }
+  respond.status(200).json({
+    status: 'Success',
+    data: {
+      tour: tour,
+    },
+  });
+});
+
+//add new tour endpoint
 app.post('/api/v1/tours', (request, respond) => {
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, request.body); //create new object from request
