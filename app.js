@@ -3,7 +3,15 @@ const fs = require('fs');
 
 const app = express();
 app.use(express.json()); //using middleware
+app.use((request, respond, next) => {
+  console.log(`wassap geng its robin`);
+  next();
+});
 
+app.use((request, respond, next) => {
+  request.requestTime = new Date().toISOString();
+  next();
+});
 //read tours from local data in json format
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
@@ -11,8 +19,10 @@ const tours = JSON.parse(
 
 //method for get all tours
 const getAllTours = (request, respond) => {
+  console.log(request.requestTime);
   respond.status(200).json({
     status: 'success',
+    requestTime: request.requestTime,
     results: tours.length,
     data: {
       tours: tours,
