@@ -95,11 +95,36 @@ const deleteTour = (request, respond) => {
   });
 };
 
-// app.get('/api/v1/tours', getAllTours);
-// app.get('/api/v1/tours/:id', getSingleTour);
-// app.post('/api/v1/tours', createTour);
-// app.patch('/api/v1/tours/:id', updateTour);
-// app.delete('/api/v1/tours/:id', deleteTour);
+const getAllUsers = (request, respond) => {
+  respond.status(500).json({
+    status: 'Error',
+    message: 'This route is not yet implemented.',
+  });
+};
+const getSingleUser = (request, respond) => {
+  respond.status(500).json({
+    status: 'Error',
+    message: 'This route is not yet implemented.',
+  });
+};
+const createUser = (request, respond) => {
+  respond.status(500).json({
+    status: 'Error',
+    message: 'This route is not yet implemented.',
+  });
+};
+const updateUser = (request, respond) => {
+  respond.status(500).json({
+    status: 'Error',
+    message: 'This route is not yet implemented.',
+  });
+};
+const deleteUser = (request, respond) => {
+  respond.status(500).json({
+    status: 'Error',
+    message: 'This route is not yet implemented.',
+  });
+};
 
 app.route('/api/v1/tours').get(getAllTours).post(createTour);
 app
@@ -107,6 +132,13 @@ app
   .get(getSingleTour)
   .patch(updateTour)
   .delete(deleteTour);
+
+app.route('/api/v1/users').get(getAllUsers).post(createUser);
+app
+  .route('/api/v1/users/:id')
+  .get(getSingleUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 const port = 3000;
 
