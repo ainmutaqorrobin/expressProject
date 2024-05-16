@@ -5,6 +5,17 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
 
+exports.validateID = (request, respond, next, value) => {
+  console.log(`Tour id is: ${value}`);
+  const tour = tours.find((el) => el.id === +request.params.id);
+  if (!tour) {
+    return respond
+      .status(404)
+      .json({ status: 'Failed', message: 'Failed to search the tour' });
+  }
+  next();
+};
+
 //method for get all tours
 exports.getAllTours = (request, respond) => {
   console.log(request.requestTime);
@@ -21,11 +32,6 @@ exports.getAllTours = (request, respond) => {
 //method for get single tour
 exports.getSingleTour = (request, respond) => {
   const tour = tours.find((el) => el.id === +request.params.id);
-  if (!tour) {
-    return respond
-      .status(404)
-      .json({ status: 'Failed', message: 'Failed to search the tour' });
-  }
   respond.status(200).json({ status: 'Success', data: { tours: tour } });
 };
 
@@ -51,12 +57,6 @@ exports.createTour = (request, respond) => {
 //method for update tour
 exports.updateTour = (request, respond) => {
   const tour = tours.find((el) => el.id === +request.params.id);
-  if (!tour) {
-    return respond.status(404).json({
-      status: 'Failed',
-      message: 'Could not find and update the tour',
-    });
-  }
   respond.status(200).json({
     status: 'success',
     data: {
@@ -67,13 +67,6 @@ exports.updateTour = (request, respond) => {
 
 //method for delete tour
 exports.deleteTour = (request, respond) => {
-  const tour = tours.find((el) => el.id === +request.params.id);
-  if (!tour) {
-    return respond.status(404).json({
-      status: 'Failed',
-      message: 'Failed to delete the selected tour',
-    });
-  }
   respond.status(204).json({
     status: 'Success',
     data: null,
