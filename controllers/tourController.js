@@ -16,6 +16,17 @@ exports.validateID = (request, respond, next, value) => {
   next();
 };
 
+exports.checkBodyRequest = (request, respond, next) => {
+  if (!request.body.name || !request.body.price) {
+    return respond.status(400).json({
+      status: 'Failed',
+      message: 'Missing name or price params.',
+    });
+  }
+
+  next();
+};
+
 //method for get all tours
 exports.getAllTours = (request, respond) => {
   console.log(request.requestTime);
