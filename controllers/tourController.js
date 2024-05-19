@@ -3,8 +3,16 @@ const Tour = require('../models/tourModel');
 //method for get all tours
 exports.getAllTours = async (request, respond) => {
   try {
-    const tours = await Tour.find();
+    //copy request query using spread operator
+    const requestQuery = { ...request.query };
+    const excludeQuery = ['page', 'sort', 'limit', 'field'];
 
+    //filtered the query by delete if the excludeQuery exist in requestQuery
+    excludeQuery.forEach((el) => delete requestQuery[el]);
+    const query = Tour.find(requestQuery);
+
+    //execute query
+    const tours = await query;
     respond.status(200).json({
       status: 'Success',
       result: tours.length,
