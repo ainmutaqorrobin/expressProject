@@ -36,7 +36,6 @@ const deleteTour = async () => {
   try {
     await Tour.deleteMany();
     console.log('Data successfully deleted');
-    process.exit();
   } catch (error) {
     console.log('Error in delete collection in DB');
     console.log(error);
