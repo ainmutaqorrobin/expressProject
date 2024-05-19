@@ -50,7 +50,7 @@ exports.createTour = async (request, respond) => {
       },
     });
   } catch (error) {
-    respond.status(400).json({
+    respond.status(404).json({
       status: 'Failed to create new tour.',
       message: error,
     });
@@ -58,7 +58,25 @@ exports.createTour = async (request, respond) => {
 };
 
 //method for update tour
-exports.updateTour = (request, respond) => {};
+exports.updateTour = async (request, respond) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(request.params.id, request.body, {
+      new: true,
+      runValidators: true,
+    });
+    respond.status(200).json({
+      status: 'Successfull update tour.',
+      data: {
+        tour: tour,
+      },
+    });
+  } catch (error) {
+    respond.status(404).json({
+      status: 'Failed to update tour.',
+      message: error,
+    });
+  }
+};
 
 //method for delete tour
 exports.deleteTour = (request, respond) => {
