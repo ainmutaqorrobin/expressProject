@@ -79,9 +79,16 @@ exports.updateTour = async (request, respond) => {
 };
 
 //method for delete tour
-exports.deleteTour = (request, respond) => {
-  respond.status(204).json({
-    status: 'Success',
-    data: null,
-  });
+exports.deleteTour = async (request, respond) => {
+  try {
+    await Tour.findByIdAndDelete(request.params.id);
+    respond.status(204).json({
+      status: 'Tour deleted successfully.',
+    });
+  } catch (error) {
+    respond.status(404).json({
+      status: 'Failed to delete tour',
+      message: error,
+    });
+  }
 };
