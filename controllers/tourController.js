@@ -1,85 +1,94 @@
-const fs = require('fs');
-
-//read tours from local data in json format
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
-);
-
-exports.validateID = (request, respond, next, value) => {
-  console.log(`Tour id is: ${value}`);
-  const tour = tours.find((el) => el.id === +request.params.id);
-  if (!tour) {
-    return respond
-      .status(404)
-      .json({ status: 'Failed', message: 'Failed to search the tour' });
-  }
-  next();
-};
-
-exports.checkBodyRequest = (request, respond, next) => {
-  if (!request.body.name || !request.body.price) {
-    return respond.status(400).json({
-      status: 'Failed',
-      message: 'Missing name or price params.',
-    });
-  }
-
-  next();
-};
+const Tour = require('../models/tourModel');
 
 //method for get all tours
-exports.getAllTours = (request, respond) => {
-  console.log(request.requestTime);
-  respond.status(200).json({
-    status: 'success',
-    requestTime: request.requestTime,
-    results: tours.length,
-    data: {
-      tours: tours,
-    },
-  });
+exports.getAllTours = async (request, respond) => {
+  try {
+    const tours = await Tour.find();
+
+    respond.status(200).json({
+      status: 'Success',
+      result: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (error) {
+    respond.status(404).json({
+      status: 'Failed',
+      message: error,
+    });
+  }
 };
 
 //method for get single tour
-exports.getSingleTour = (request, respond) => {
-  const tour = tours.find((el) => el.id === +request.params.id);
-  respond.status(200).json({ status: 'Success', data: { tours: tour } });
+exports.getSingleTour = async (request, respond) => {
+  try {
+    const tour = await Tour.findById(request.params.id);
+    respond.status(200).json({
+      status: 'Success',
+      data: {
+        tour,
+      },
+    });
+  } catch (error) {
+    respond.status(404).json({
+      status: 'Failed',
+      message: error,
+    });
+  }
 };
 
 //method for create new tour
-exports.createTour = (request, respond) => {
-  const newId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, request.body); //create new object from request
-  tours.push(newTour);
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    () => {
-      respond.status(201).json({
-        status: 'successfully add new tour',
-        data: {
-          tours: tours,
-        },
-      });
-    }
-  );
+exports.createTour = async (request, respond) => {
+  try {
+    const newTour = await Tour.create(request.body);
+
+    respond.status(201).json({
+      status: 'Successfull created new tour.',
+      data: {
+        tour: newTour,
+      },
+    });
+  } catch (error) {
+    respond.status(404).json({
+      status: 'Failed to create new tour.',
+      message: error,
+    });
+  }
 };
 
 //method for update tour
-exports.updateTour = (request, respond) => {
-  const tour = tours.find((el) => el.id === +request.params.id);
-  respond.status(200).json({
-    status: 'success',
-    data: {
-      tour: tour,
-    },
-  });
+exports.updateTour = async (request, respond) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(request.params.id, request.body, {
+      new: true,
+      runValidators: true,
+    });
+    respond.status(200).json({
+      status: 'Successfull update tour.',
+      data: {
+        tour: tour,
+      },
+    });
+  } catch (error) {
+    respond.status(404).json({
+      status: 'Failed to update tour.',
+      message: error,
+    });
+  }
 };
 
 //method for delete tour
-exports.deleteTour = (request, respond) => {
-  respond.status(204).json({
-    status: 'Success',
-    data: null,
-  });
+exports.deleteTour = async (request, respond) => {
+  try {
+    await Tour.findByIdAndDelete(request.params.id);
+    respond.status(204).json({
+      status: 'Tour deleted successfully.',
+    });
+  } catch (error) {
+    respond.status(404).json({
+      status: 'Failed to delete tour',
+      message: error,
+    });
+  }
 };
