@@ -5,7 +5,7 @@ exports.getAllTours = async (request, respond) => {
   try {
     //copy request query using spread operator
     const requestQuery = { ...request.query };
-    const excludeQuery = ['page', 'sort', 'limit', 'field'];
+    const excludeQuery = ['page', 'sort', 'limit', 'fields'];
 
     //filtered the query by delete if the excludeQuery exist in requestQuery
     excludeQuery.forEach((el) => delete requestQuery[el]);
@@ -25,6 +25,15 @@ exports.getAllTours = async (request, respond) => {
     } else {
       query = query.sort('-createdAt');
     }
+
+    //projecting query
+    if (request.query.fields) {
+      const fields = request.query.fields.split(',').join(' ');
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v');
+    }
+
     //execute query
     const tours = await query;
 
