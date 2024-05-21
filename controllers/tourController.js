@@ -16,8 +16,11 @@ exports.getAllTours = async (request, respond) => {
       /\b(gte|lte|gt|lt)\b/g,
       (word) => `$${word}`
     );
-    const query = Tour.find(JSON.parse(queryString));
+    let query = Tour.find(JSON.parse(queryString));
 
+    if (request.query.sort) {
+      query = query.sort(request.query.sort);
+    }
     //execute query
     const tours = await query;
 
