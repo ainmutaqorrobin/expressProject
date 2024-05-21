@@ -5,14 +5,38 @@ exports.getAllTours = async (request, respond) => {
   try {
     //copy request query using spread operator
     const requestQuery = { ...request.query };
-    const excludeQuery = ['page', 'sort', 'limit', 'field'];
+    const excludeQuery = ['page', 'sort', 'limit', 'fields'];
 
     //filtered the query by delete if the excludeQuery exist in requestQuery
     excludeQuery.forEach((el) => delete requestQuery[el]);
-    const query = Tour.find(requestQuery);
+
+    //advanced filtering
+    let queryString = JSON.stringify(requestQuery);
+    queryString = queryString.replace(
+      /\b(gte|lte|gt|lt)\b/g,
+      (word) => `$${word}`
+    );
+    let query = Tour.find(JSON.parse(queryString));
+
+    if (request.query.sort) {
+      //if have multiple sorting query
+      const multiQuerySort = request.query.sort.split(',').join(' ');
+      query = query.sort(multiQuerySort);
+    } else {
+      query = query.sort('-createdAt');
+    }
+
+    //projecting query
+    if (request.query.fields) {
+      const fields = request.query.fields.split(',').join(' ');
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v');
+    }
 
     //execute query
     const tours = await query;
+
     respond.status(200).json({
       status: 'Success',
       result: tours.length,
