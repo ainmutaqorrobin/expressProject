@@ -22,6 +22,8 @@ exports.getAllTours = async (request, respond) => {
       //if have multiple sorting query
       const multiQuerySort = request.query.sort.split(',').join(' ');
       query = query.sort(multiQuerySort);
+    } else {
+      query = query.sort('-createdAt');
     }
     //execute query
     const tours = await query;
