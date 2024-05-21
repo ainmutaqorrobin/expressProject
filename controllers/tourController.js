@@ -9,10 +9,18 @@ exports.getAllTours = async (request, respond) => {
 
     //filtered the query by delete if the excludeQuery exist in requestQuery
     excludeQuery.forEach((el) => delete requestQuery[el]);
-    const query = Tour.find(requestQuery);
+
+    //advanced filtering
+    let queryString = JSON.stringify(requestQuery);
+    queryString = queryString.replace(
+      /\b(gte|lte|gt|lt)\b/g,
+      (word) => `$${word}`
+    );
+    const query = Tour.find(JSON.parse(queryString));
 
     //execute query
     const tours = await query;
+
     respond.status(200).json({
       status: 'Success',
       result: tours.length,
