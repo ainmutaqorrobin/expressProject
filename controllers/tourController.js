@@ -23,6 +23,7 @@ exports.getAllTours = async (request, respond) => {
       const multiQuerySort = request.query.sort.split(',').join(' ');
       query = query.sort(multiQuerySort);
     } else {
+      //default sorting
       query = query.sort('-createdAt');
     }
 
@@ -32,6 +33,16 @@ exports.getAllTours = async (request, respond) => {
       query = query.select(fields);
     } else {
       query = query.select('-__v');
+    }
+
+    //pagination
+    if (request.query.page) {
+      const page = +request.query.page || 0;
+      const limit = +request.query.limit || 0;
+      const skip = (page - 1) * limit;
+      const numTours = await Tour.countDocuments();
+      if (skip >= numTours) throw new Error('This page does not exist.');
+      query = query.skip(skip).limit(limit);
     }
 
     //execute query
