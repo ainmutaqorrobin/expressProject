@@ -19,7 +19,9 @@ exports.getAllTours = async (request, respond) => {
     let query = Tour.find(JSON.parse(queryString));
 
     if (request.query.sort) {
-      query = query.sort(request.query.sort);
+      //if have multiple sorting query
+      const multiQuerySort = request.query.sort.split(',').join(' ');
+      query = query.sort(multiQuerySort);
     }
     //execute query
     const tours = await query;
