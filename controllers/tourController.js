@@ -1,4 +1,5 @@
 const Tour = require('../models/tourModel');
+const APIFeatures = require('../utils/apiFeatures');
 
 //alias for get top tours
 exports.aliasTopTours = (request, respond, next) => {
@@ -11,50 +12,13 @@ exports.aliasTopTours = (request, respond, next) => {
 //method for get all tours
 exports.getAllTours = async (request, respond) => {
   try {
-    //copy request query using spread operator
-    const requestQuery = { ...request.query };
-    const excludeQuery = ['page', 'sort', 'limit', 'fields'];
-
-    //filtered the query by delete if the excludeQuery exist in requestQuery
-    excludeQuery.forEach((el) => delete requestQuery[el]);
-
-    //advanced filtering
-    let queryString = JSON.stringify(requestQuery);
-    queryString = queryString.replace(
-      /\b(gte|lte|gt|lt)\b/g,
-      (word) => `$${word}`
-    );
-    let query = Tour.find(JSON.parse(queryString));
-
-    if (request.query.sort) {
-      //if have multiple sorting query
-      const multiQuerySort = request.query.sort.split(',').join(' ');
-      query = query.sort(multiQuerySort);
-    } else {
-      //default sorting
-      query = query.sort('-createdAt');
-    }
-
-    //projecting query
-    if (request.query.fields) {
-      const fields = request.query.fields.split(',').join(' ');
-      query = query.select(fields);
-    } else {
-      query = query.select('-__v');
-    }
-
-    //pagination
-    if (request.query.limit) {
-      const page = +request.query.page || 1;
-      const limit = +request.query.limit || 10;
-      const skip = (page - 1) * limit;
-      const numTours = await Tour.countDocuments();
-      if (skip >= numTours) throw new Error('This page does not exist.');
-      query = query.skip(skip).limit(limit);
-    }
-
     //execute query
-    const tours = await query;
+    const features = new APIFeatures(Tour.find(), request.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .pagination();
+    const tours = await features.query;
 
     respond.status(200).json({
       status: 'Success',
