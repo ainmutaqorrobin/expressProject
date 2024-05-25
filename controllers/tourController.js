@@ -78,6 +78,7 @@ exports.updateTour = async (request, respond) => {
   try {
     const tour = await Tour.findByIdAndUpdate(request.params.id, request.body, {
       new: true,
+      //mongoose will run again the validators every update
       runValidators: true,
     });
     respond.status(200).json({
