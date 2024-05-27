@@ -22,10 +22,21 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
 app.all('*', (request, respond, next) => {
-  respond.status(404).json({
-    status: 'Failed.',
-    message: `Cannot find ${request.originalUrl} path on this server.`,
-  });
+  const error = new Error(
+    `Cannot find ${request.originalUrl} path on this server.`
+  );
+  (error.status = 'Failed'), (error.statusCode = 404);
+  next(error);
 });
 
+//error handling middleware
+app.use((error, request, respond, next) => {
+  error.statusCode = error.statusCode || 500;
+  error.status = error.status || 'Error';
+
+  respond.status(error.statusCode).json({
+    status: error.status,
+    message: error.message,
+  });
+});
 module.exports = app;
