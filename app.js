@@ -1,5 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
+
+const AppError = require('./utils/appError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const app = express();
@@ -22,11 +24,9 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
 app.all('*', (request, respond, next) => {
-  const error = new Error(
-    `Cannot find ${request.originalUrl} path on this server.`
+  next(
+    new AppError(`Cannot find ${request.originalUrl} path on this server.`, 404)
   );
-  (error.status = 'Failed'), (error.statusCode = 404);
-  next(error);
 });
 
 //error handling middleware
