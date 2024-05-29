@@ -2,6 +2,7 @@ const { response } = require('express');
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
 const catchAsyncError = require('../utils/catchAsyncError');
+const AppError = require('../utils/appError');
 
 //alias for get top tours
 exports.aliasTopTours = (request, respond, next) => {
@@ -33,6 +34,12 @@ exports.getAllTours = catchAsyncError(async (request, respond, next) => {
 //method for get single tour
 exports.getSingleTour = catchAsyncError(async (request, respond, next) => {
   const tour = await Tour.findById(request.params.id);
+
+  if (!tour) {
+    return next(
+      new AppError(`No tour found with ID ${request.params.id}`, 404)
+    );
+  }
   respond.status(200).json({
     status: 'Success',
     data: {
@@ -60,6 +67,11 @@ exports.updateTour = catchAsyncError(async (request, respond, next) => {
     //mongoose will run again the validators every update
     runValidators: true,
   });
+  if (!tour) {
+    return next(
+      new AppError(`No tour found with ID ${request.params.id}`, 404)
+    );
+  }
   respond.status(200).json({
     status: 'Successfull update tour.',
     data: {
@@ -70,7 +82,12 @@ exports.updateTour = catchAsyncError(async (request, respond, next) => {
 
 //method for delete tour
 exports.deleteTour = catchAsyncError(async (request, respond, next) => {
-  await Tour.findByIdAndDelete(request.params.id);
+  const tour = await Tour.findByIdAndDelete(request.params.id);
+  if (!tour) {
+    return next(
+      new AppError(`No tour found with ID ${request.params.id}`, 404)
+    );
+  }
   respond.status(204).json({
     status: 'Tour deleted successfully.',
   });
