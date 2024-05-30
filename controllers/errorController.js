@@ -5,6 +5,13 @@ const handleCastErrorDB = (error) => {
   return new AppError(message, 400);
 };
 
+const handleDuplicateFieldDB = (error) => {
+  const key = Object.keys(error.keyValue).join('');
+  const message = `${key} has duplicate value of '${error.keyValue[key]}'`;
+  console.log(message);
+  return new AppError(message, 400);
+};
+
 //error handling middleware
 const sendErrorDev = (error, respond) => {
   respond.status(error.statusCode).json({
@@ -41,6 +48,7 @@ module.exports = (error, request, respond, next) => {
   } else if (process.env.NODE_ENV === 'production') {
     let err = { ...error };
     if (error.name === 'CastError') err = handleCastErrorDB(err);
+    if (error.code === 11000) err = handleDuplicateFieldDB(err);
 
     sendErrorProduction(err, respond);
   }
