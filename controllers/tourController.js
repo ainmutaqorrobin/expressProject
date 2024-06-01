@@ -1,6 +1,8 @@
 const { response } = require('express');
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
+const catchAsyncError = require('../utils/catchAsyncError');
+const AppError = require('../utils/appError');
 
 //alias for get top tours
 exports.aliasTopTours = (request, respond, next) => {
@@ -11,106 +13,87 @@ exports.aliasTopTours = (request, respond, next) => {
 };
 
 //method for get all tours
-exports.getAllTours = async (request, respond) => {
-  try {
-    //execute query
-    const features = new APIFeatures(Tour.find(), request.query)
-      .filter()
-      .sort()
-      .limitFields()
-      .pagination();
-    const tours = await features.query;
+exports.getAllTours = catchAsyncError(async (request, respond, next) => {
+  //execute query
+  const features = new APIFeatures(Tour.find(), request.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .pagination();
+  const tours = await features.query;
 
-    respond.status(200).json({
-      status: 'Success',
-      result: tours.length,
-      data: {
-        tours,
-      },
-    });
-  } catch (error) {
-    respond.status(404).json({
-      status: 'Failed',
-      message: error,
-    });
-  }
-};
+  respond.status(200).json({
+    status: 'Success',
+    result: tours.length,
+    data: {
+      tours,
+    },
+  });
+});
 
 //method for get single tour
-exports.getSingleTour = async (request, respond) => {
-  try {
-    const tour = await Tour.findById(request.params.id);
-    respond.status(200).json({
-      status: 'Success',
-      data: {
-        tour,
-      },
-    });
-  } catch (error) {
-    respond.status(404).json({
-      status: 'Failed',
-      message: error,
-    });
+exports.getSingleTour = catchAsyncError(async (request, respond, next) => {
+  const tour = await Tour.findById(request.params.id);
+
+  if (!tour) {
+    return next(
+      new AppError(`No tour found with ID ${request.params.id}`, 404)
+    );
   }
-};
+  respond.status(200).json({
+    status: 'Success',
+    data: {
+      tour,
+    },
+  });
+});
 
 //method for create new tour
-exports.createTour = async (request, respond) => {
-  try {
-    const newTour = await Tour.create(request.body);
+exports.createTour = catchAsyncError(async (request, respond, next) => {
+  const newTour = await Tour.create(request.body);
 
-    respond.status(201).json({
-      status: 'Successfull created new tour.',
-      data: {
-        tour: newTour,
-      },
-    });
-  } catch (error) {
-    respond.status(404).json({
-      status: 'Failed to create new tour.',
-      message: error,
-    });
-  }
-};
+  respond.status(201).json({
+    status: 'Successfull created new tour.',
+    data: {
+      tour: newTour,
+    },
+  });
+});
 
 //method for update tour
-exports.updateTour = async (request, respond) => {
-  try {
-    const tour = await Tour.findByIdAndUpdate(request.params.id, request.body, {
-      new: true,
-      //mongoose will run again the validators every update
-      runValidators: true,
-    });
-    respond.status(200).json({
-      status: 'Successfull update tour.',
-      data: {
-        tour: tour,
-      },
-    });
-  } catch (error) {
-    respond.status(404).json({
-      status: 'Failed to update tour.',
-      message: error,
-    });
+exports.updateTour = catchAsyncError(async (request, respond, next) => {
+  const tour = await Tour.findByIdAndUpdate(request.params.id, request.body, {
+    new: true,
+    //mongoose will run again the validators every update
+    runValidators: true,
+  });
+  if (!tour) {
+    return next(
+      new AppError(`No tour found with ID ${request.params.id}`, 404)
+    );
   }
-};
+  respond.status(200).json({
+    status: 'Successfull update tour.',
+    data: {
+      tour: tour,
+    },
+  });
+});
 
 //method for delete tour
-exports.deleteTour = async (request, respond) => {
-  try {
-    await Tour.findByIdAndDelete(request.params.id);
-    respond.status(204).json({
-      status: 'Tour deleted successfully.',
-    });
-  } catch (error) {
-    respond.status(404).json({
-      status: 'Failed to delete tour',
-      message: error,
-    });
+exports.deleteTour = catchAsyncError(async (request, respond, next) => {
+  const tour = await Tour.findByIdAndDelete(request.params.id);
+  if (!tour) {
+    return next(
+      new AppError(`No tour found with ID ${request.params.id}`, 404)
+    );
   }
-};
+  respond.status(204).json({
+    status: 'Tour deleted successfully.',
+  });
+});
 
-exports.getTourStats = async (request, respond) => {
+exports.getTourStats = catchAsyncError(async (request, respond, next) => {
   try {
     const stats = await Tour.aggregate([
       {
@@ -146,57 +129,50 @@ exports.getTourStats = async (request, respond) => {
       message: error,
     });
   }
-};
+});
 
-exports.getMonthlyStats = async (request, respond) => {
-  try {
-    const year = +request.params.year;
-    const plan = await Tour.aggregate([
-      { $unwind: '$startDates' },
-      {
-        $match: {
-          startDates: {
-            $gte: new Date(`${year}-01-01`),
-            $lte: new Date(`${year}-12-31`),
-          },
+exports.getMonthlyStats = catchAsyncError(async (request, respond, next) => {
+  const year = +request.params.year;
+  const plan = await Tour.aggregate([
+    { $unwind: '$startDates' },
+    {
+      $match: {
+        startDates: {
+          $gte: new Date(`${year}-01-01`),
+          $lte: new Date(`${year}-12-31`),
         },
       },
-      {
-        $group: {
-          _id: { $month: '$startDates' },
-          numOfTours: { $sum: 1 },
-          tours: {
-            $push: '$name',
-          },
+    },
+    {
+      $group: {
+        _id: { $month: '$startDates' },
+        numOfTours: { $sum: 1 },
+        tours: {
+          $push: '$name',
         },
       },
-      {
-        $addFields: {
-          month: '$_id',
-        },
+    },
+    {
+      $addFields: {
+        month: '$_id',
       },
-      {
-        $project: {
-          _id: 0,
-        },
+    },
+    {
+      $project: {
+        _id: 0,
       },
-      {
-        $sort: {
-          numOfTours: -1,
-        },
+    },
+    {
+      $sort: {
+        numOfTours: -1,
       },
-    ]);
+    },
+  ]);
 
-    respond.status(200).json({
-      status: 'Success',
-      data: {
-        plan,
-      },
-    });
-  } catch (error) {
-    respond.status(404).json({
-      status: 'Failed to get monthly stats',
-      message: error,
-    });
-  }
-};
+  respond.status(200).json({
+    status: 'Success',
+    data: {
+      plan,
+    },
+  });
+});
