@@ -8,6 +8,9 @@ const {
   deleteUser,
 } = require('../controllers/userController');
 
+const { signUp } = require('../controllers/authController');
+
+router.post('/signup', signUp);
 router.route('/').get(getAllUsers).post(createUser);
 router.route('/:id').get(getSingleUser).patch(updateUser).delete(deleteUser);
 
