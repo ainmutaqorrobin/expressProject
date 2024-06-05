@@ -17,6 +17,7 @@ exports.signUp = catchAsyncError(async (request, respond, next) => {
     password: request.body.password,
     passwordConfirm: request.body.passwordConfirm,
     passwordChangeAt: request.body.passwordChangeAt,
+    role: request.body.role,
   });
 
   const token = signToken(newUser._id);
@@ -100,3 +101,14 @@ exports.checkAuthentication = catchAsyncError(
     next();
   }
 );
+
+exports.restrictTo = (...roles) => {
+  return (request, respond, next) => {
+    if (!roles.includes(request.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403)
+      );
+    }
+    next();
+  };
+};
