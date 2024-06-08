@@ -55,6 +55,14 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  //minus 1 seconds to prevent delay in sign token
+  this.passwordChangeAt = Date.now() - 1000;
+  next();
+});
+
 userSchema.methods.checkingPassword = async function (
   enteredPassword,
   databasePassword
@@ -80,7 +88,7 @@ userSchema.methods.createPasswordResetToken = function () {
 
   //expired within 10 minutes
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-  console.log({resetToken}, this.passwordResetToken);
+  console.log({ resetToken }, this.passwordResetToken);
 
   return resetToken;
 };
