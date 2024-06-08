@@ -62,11 +62,8 @@ exports.updateUserSelf = catchAsyncError(async (request, respond, next) => {
       runValidators: true,
     }
   );
-  console.log(filteredBody);
-  console.log(updatedUser);
   respond.status(200).json({
     status: 'Success.',
-    filteredBody: filteredBody,
     data: { user: updatedUser },
   });
 });
@@ -77,3 +74,12 @@ exports.deleteUser = (request, respond) => {
     message: 'This route is not yet implemented.',
   });
 };
+
+exports.deleteUserSelf = catchAsyncError(async (request, respond, next) => {
+  await User.findByIdAndUpdate(request.user.id, { active: false });
+
+  respond.status(204).json({
+    status: 'Success deactive.',
+    data: null,
+  });
+});
