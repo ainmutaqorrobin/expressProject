@@ -8,7 +8,6 @@ const handleCastErrorDB = (error) => {
 const handleDuplicateFieldDB = (error) => {
   const key = Object.keys(error.keyValue).join('');
   const message = `${key} has duplicate value of '${error.keyValue[key]}'`;
-  console.log(message);
   return new AppError(message, 400);
 };
 
@@ -17,6 +16,12 @@ const handleValidationErrorDB = (error) => {
   const message = `Invalid input data. ${errors.join('. ')}`;
   return new AppError(message, 400);
 };
+
+const handleJWTError = (error) =>
+  new AppError('Invalid token. Please login again!', 401);
+
+const handleTokenExpiredError = (error) =>
+  new AppError('Your token has expired! Please login back again!', 401);
 
 //error handling middleware
 const sendErrorDev = (error, respond) => {
@@ -56,6 +61,9 @@ module.exports = (error, request, respond, next) => {
     if (error.name === 'CastError') err = handleCastErrorDB(err);
     if (error.code === 11000) err = handleDuplicateFieldDB(err);
     if (error.name === 'ValidationError') err = handleValidationErrorDB(err);
+    if (error.name === 'JsonWebTokenError') err = handleJWTError(err);
+    if (error.name === 'TokenExpiredError') err = handleTokenExpiredError(err);
+    
     sendErrorProduction(err, respond);
   }
 };
