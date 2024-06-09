@@ -12,6 +12,18 @@ const signToken = (id) => {
   });
 };
 
+const createSendToken = (user, statusCode, respond) => {
+  const token = signToken(user._id);
+
+  respond.status(statusCode).json({
+    status: 'Successful.',
+    token: token,
+    data: {
+      user,
+    },
+  });
+};
+
 exports.signUp = catchAsyncError(async (request, respond, next) => {
   const newUser = await User.create({
     name: request.body.name,
@@ -21,17 +33,7 @@ exports.signUp = catchAsyncError(async (request, respond, next) => {
     passwordChangeAt: request.body.passwordChangeAt,
     role: request.body.role,
   });
-
-  const token = signToken(newUser._id);
-
-  respond.status(201).json({
-    status: 'Successful.',
-    message: 'Created new user.',
-    token: token,
-    data: {
-      user: newUser,
-    },
-  });
+  createSendToken(newUser, 201, respond);
 });
 
 exports.login = catchAsyncError(async (request, respond, next) => {
@@ -50,13 +52,7 @@ exports.login = catchAsyncError(async (request, respond, next) => {
   }
 
   //Sending token to client
-  const token = signToken(user._id);
-
-  console.log(user);
-  respond.status(200).json({
-    status: 'Success.',
-    token: token,
-  });
+  createSendToken(user, 200, respond);
 });
 
 exports.checkAuthentication = catchAsyncError(
@@ -178,11 +174,25 @@ exports.resetPassword = catchAsyncError(async (request, respond, next) => {
 
   //update changePasswordAt property for user
 
-  const token = signToken(user._id);
+  createSendToken(user, 200, respond);
+});
 
-  respond.status(200).json({
-    status: 'Success.',
-    message: 'Password successfully changed.',
-    token: token,
-  });
+exports.updatePassword = catchAsyncError(async (request, respond, next) => {
+  //get current user info
+  const user = await User.findById(request.user.id).select('+password');
+
+  //check if current password correct
+  if (
+    !(await user.checkingPassword(request.body.password, user.password))
+  ) {
+    return next(new AppError('Your new password is not same', 401));
+  }
+
+  //update new password
+  user.password = request.body.newPassword;
+  user.passwordConfirm = request.body.newPasswordConfirm;
+  await user.save();
+
+  //log user in, send JWT
+  createSendToken(user, 200, respond);
 });
