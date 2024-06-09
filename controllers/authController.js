@@ -14,7 +14,18 @@ const signToken = (id) => {
 
 const createSendToken = (user, statusCode, respond) => {
   const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
+  //send jwt via cookie
+  respond.cookie('jwt', token, cookieOptions);
+  //remove password from response
+  user.password = undefined;
   respond.status(statusCode).json({
     status: 'Successful.',
     token: token,
@@ -182,9 +193,7 @@ exports.updatePassword = catchAsyncError(async (request, respond, next) => {
   const user = await User.findById(request.user.id).select('+password');
 
   //check if current password correct
-  if (
-    !(await user.checkingPassword(request.body.password, user.password))
-  ) {
+  if (!(await user.checkingPassword(request.body.password, user.password))) {
     return next(new AppError('Your new password is not same', 401));
   }
 
