@@ -8,6 +8,7 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const hpp = require('hpp');
 const app = express();
 
 //to make HTTP Header secured
@@ -33,7 +34,21 @@ app.use(express.json({ limit: '10kb' }));
 app.use(mongoSanitize());
 
 //Data sanitization against XSS
-app.use(xss())
+app.use(xss());
+
+//prevent parameter pollution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsAverage',
+      'ratingsQuantity',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  })
+);
 
 //read static file
 app.use(express.static(`${__dirname}/public`));
