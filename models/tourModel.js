@@ -123,6 +123,15 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangeAt',
+  });
+
+  next();
+});
+
 tourSchema.post(/^find/, function (document, next) {
   console.log(`Query tooks  + ${Date.now() - this.start}  miliseconds`);
   console.log(document);
