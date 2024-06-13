@@ -13,8 +13,7 @@ const reviewSchema = new mongoose.Schema(
       max: 5,
       required: [true, 'Rate must be put before submit.'],
     },
-    createdAt: Date,
-    default: Date.now(),
+    createdAt: { type: Date, default: Date.now() },
     tour: {
       type: mongoose.Schema.ObjectId,
       ref: 'Tour',

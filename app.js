@@ -6,6 +6,7 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
@@ -40,7 +41,7 @@ app.use(xss());
 app.use(
   hpp({
     whitelist: [
-      'duration', 
+      'duration',
       'ratingsAverage',
       'ratingsQuantity',
       'maxGroupSize',
@@ -63,6 +64,7 @@ app.use((request, respond, next) => {
 //routes
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 app.all('*', (request, respond, next) => {
   next(
