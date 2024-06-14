@@ -17,6 +17,7 @@ const {
   resetPassword,
   updatePassword,
   checkAuthentication,
+  restrictTo,
 } = require('../controllers/authController');
 
 router.post('/signup', signUp);
