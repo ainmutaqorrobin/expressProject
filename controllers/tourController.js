@@ -32,7 +32,7 @@ exports.getAllTours = catchAsyncError(async (request, respond, next) => {
 
 //method for get single tour
 exports.getSingleTour = catchAsyncError(async (request, respond, next) => {
-  const tour = await Tour.findById(request.params.id);
+  const tour = await Tour.findById(request.params.id).populate('reviews');
 
   if (!tour) {
     return next(
