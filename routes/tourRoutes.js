@@ -15,10 +15,9 @@ const {
   restrictTo,
 } = require('../controllers/authController');
 
-const {
-  createReview,
-  getAllReview,
-} = require('../controllers/reviewController');
+const reviewRouter = require('../routes/reviewRoutes');
+
+router.use('/:tourId/reviews', reviewRouter);
 
 // router.param('id', validateID);
 router.route('/').get(checkAuthentication, getAllTours).post(createTour);
@@ -30,9 +29,5 @@ router
   .get(getSingleTour)
   .patch(updateTour)
   .delete(checkAuthentication, restrictTo('admin', 'lead-guide'), deleteTour);
-
-router
-  .route('/:tourId/reviews')
-  .post(checkAuthentication, restrictTo('user'), createReview);
 
 module.exports = router;
