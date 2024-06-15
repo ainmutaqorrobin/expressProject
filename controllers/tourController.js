@@ -49,36 +49,42 @@ exports.getSingleTour = catchAsyncError(async (request, respond, next) => {
 });
 
 //method for create new tour
-exports.createTour = catchAsyncError(async (request, respond, next) => {
-  const newTour = await Tour.create(request.body);
+// exports.createTour = catchAsyncError(async (request, respond, next) => {
+//   const newTour = await Tour.create(request.body);
 
-  respond.status(201).json({
-    status: 'Successfull created new tour.',
-    data: {
-      tour: newTour,
-    },
-  });
-});
+//   respond.status(201).json({
+//     status: 'Successfull created new tour.',
+//     data: {
+//       tour: newTour,
+//     },
+//   });
+// });
+
+//method for create new tour
+exports.createTour = factory.createOne(Tour);
 
 //method for update tour
-exports.updateTour = catchAsyncError(async (request, respond, next) => {
-  const tour = await Tour.findByIdAndUpdate(request.params.id, request.body, {
-    new: true,
-    //mongoose will run again the validators every update
-    runValidators: true,
-  });
-  if (!tour) {
-    return next(
-      new AppError(`No tour found with ID ${request.params.id}`, 404)
-    );
-  }
-  respond.status(200).json({
-    status: 'Successfull update tour.',
-    data: {
-      tour: tour,
-    },
-  });
-});
+// exports.updateTour = catchAsyncError(async (request, respond, next) => {
+//   const tour = await Tour.findByIdAndUpdate(request.params.id, request.body, {
+//     new: true,
+//     //mongoose will run again the validators every update
+//     runValidators: true,
+//   });
+//   if (!tour) {
+//     return next(
+//       new AppError(`No tour found with ID ${request.params.id}`, 404)
+//     );
+//   }
+//   respond.status(200).json({
+//     status: 'Successfull update tour.',
+//     data: {
+//       tour: tour,
+//     },
+//   });
+// });
+
+//method for update tour using factory function
+exports.updateTour = factory.updateOne(Tour);
 
 //method for delete tour
 // exports.deleteTour = catchAsyncError(async (request, respond, next) => {
@@ -95,7 +101,6 @@ exports.updateTour = catchAsyncError(async (request, respond, next) => {
 
 //method for delete tour using factory function
 exports.deleteTour = factory.deleteOne(Tour);
-
 
 exports.getTourStats = catchAsyncError(async (request, respond, next) => {
   try {

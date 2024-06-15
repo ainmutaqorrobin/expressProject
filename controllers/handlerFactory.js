@@ -14,3 +14,34 @@ exports.deleteOne = (Model) =>
       data: null,
     });
   });
+
+exports.updateOne = (Model) =>
+  catchAsyncError(async (request, respond, next) => {
+    const doc = await Model.findByIdAndUpdate(request.params.id, request.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!doc) {
+      return next(new AppError('No document found with that ID', 404));
+    }
+
+    respond.status(200).json({
+      status: 'Succesfully updated.',
+      data: {
+        data: doc,
+      },
+    });
+  });
+
+exports.createOne = (Model) =>
+  catchAsyncError(async (request, respond, next) => {
+    const doc = await Model.create(request.body);
+
+    respond.status(201).json({
+      status: 'Successfully created.',
+      data: {
+        data: doc,
+      },
+    });
+  });

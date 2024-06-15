@@ -2,10 +2,9 @@ const express = require('express');
 const router = express.Router();
 const {
   getAllUsers,
-  createUser,
   getSingleUser,
   updateUserAdmin,
-  deleteUser,
+  deleteUserAdmin,
   updateUserSelf,
   deleteUserSelf,
 } = require('../controllers/userController');
@@ -29,11 +28,11 @@ router.patch('/updateUserSelf', checkAuthentication, updateUserSelf);
 router.delete('/deleteUserSelf', checkAuthentication, deleteUserSelf);
 router.patch('/resetPassword/:token', resetPassword);
 
-router.route('/').get(getAllUsers).post(createUser);
+router.route('/').get(getAllUsers);
 router
   .route('/:id')
   .get(getSingleUser)
   .patch(updateUserAdmin)
-  .delete(deleteUser);
+  .delete(deleteUserAdmin);
 
 module.exports = router;

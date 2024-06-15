@@ -30,19 +30,9 @@ exports.getSingleUser = (request, respond) => {
     message: 'This route is not yet implemented.',
   });
 };
-exports.createUser = (request, respond) => {
-  respond.status(500).json({
-    status: 'Error',
-    message: 'This route is not yet implemented.',
-  });
-};
 
-exports.updateUserAdmin = (request, respond) => {
-  respond.status(500).json({
-    status: 'Error',
-    message: 'This route is not yet implemented.',
-  });
-};
+exports.updateUserAdmin = factory.updateOne(User);
+exports.deleteUserAdmin = factory.deleteOne(User);
 
 exports.updateUserSelf = catchAsyncError(async (request, respond, next) => {
   //if user send password to update will prompt error
@@ -68,8 +58,6 @@ exports.updateUserSelf = catchAsyncError(async (request, respond, next) => {
     data: { user: updatedUser },
   });
 });
-
-exports.deleteUser = factory.deleteOne(User);
 
 exports.deleteUserSelf = catchAsyncError(async (request, respond, next) => {
   await User.findByIdAndUpdate(request.user.id, { active: false });
