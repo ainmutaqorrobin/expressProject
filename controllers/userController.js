@@ -12,18 +12,6 @@ const filteredObj = (object, ...requestFields) => {
   return newObject;
 };
 
-// exports.getAllUsers = catchAsyncError(async (request, respond) => {
-//   //execute query
-//   const users = await User.find();
-
-//   respond.status(200).json({
-//     status: 'Success',
-//     result: users.length,
-//     data: {
-//       users,
-//     },
-//   });
-// });
 exports.getAllUsers = factory.getAll(User);
 exports.getSingleUser = factory.getOne(User);
 exports.updateUserAdmin = factory.updateOne(User);
