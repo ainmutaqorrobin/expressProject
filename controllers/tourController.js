@@ -2,6 +2,7 @@ const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
 const catchAsyncError = require('../utils/catchAsyncError');
 const AppError = require('../utils/appError');
+const factory = require('./handlerFactory');
 
 //alias for get top tours
 exports.aliasTopTours = (request, respond, next) => {
@@ -80,17 +81,21 @@ exports.updateTour = catchAsyncError(async (request, respond, next) => {
 });
 
 //method for delete tour
-exports.deleteTour = catchAsyncError(async (request, respond, next) => {
-  const tour = await Tour.findByIdAndDelete(request.params.id);
-  if (!tour) {
-    return next(
-      new AppError(`No tour found with ID ${request.params.id}`, 404)
-    );
-  }
-  respond.status(204).json({
-    status: 'Tour deleted successfully.',
-  });
-});
+// exports.deleteTour = catchAsyncError(async (request, respond, next) => {
+//   const tour = await Tour.findByIdAndDelete(request.params.id);
+//   if (!tour) {
+//     return next(
+//       new AppError(`No tour found with ID ${request.params.id}`, 404)
+//     );
+//   }
+//   respond.status(204).json({
+//     status: 'Tour deleted successfully.',
+//   });
+// });
+
+//method for delete tour using factory function
+exports.deleteTour = factory.deleteOne(Tour);
+
 
 exports.getTourStats = catchAsyncError(async (request, respond, next) => {
   try {

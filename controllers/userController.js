@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsyncError = require('../utils/catchAsyncError');
+const factory = require('./handlerFactory');
 
 const filteredObj = (object, ...requestFields) => {
   const newObject = {};
@@ -68,12 +69,7 @@ exports.updateUserSelf = catchAsyncError(async (request, respond, next) => {
   });
 });
 
-exports.deleteUser = (request, respond) => {
-  respond.status(500).json({
-    status: 'Error',
-    message: 'This route is not yet implemented.',
-  });
-};
+exports.deleteUser = factory.deleteOne(User);
 
 exports.deleteUserSelf = catchAsyncError(async (request, respond, next) => {
   await User.findByIdAndUpdate(request.user.id, { active: false });
