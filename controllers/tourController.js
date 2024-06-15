@@ -1,7 +1,6 @@
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
 const catchAsyncError = require('../utils/catchAsyncError');
-const AppError = require('../utils/appError');
 const factory = require('./handlerFactory');
 
 //alias for get top tours
@@ -13,40 +12,46 @@ exports.aliasTopTours = (request, respond, next) => {
 };
 
 //method for get all tours
-exports.getAllTours = catchAsyncError(async (request, respond, next) => {
-  //execute query
-  const features = new APIFeatures(Tour.find(), request.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .pagination();
-  const tours = await features.query;
+// exports.getAllTours = catchAsyncError(async (request, respond, next) => {
+//   //execute query
+//   const features = new APIFeatures(Tour.find(), request.query)
+//     .filter()
+//     .sort()
+//     .limitFields()
+//     .pagination();
+//   const tours = await features.query;
 
-  respond.status(200).json({
-    status: 'Success',
-    result: tours.length,
-    data: {
-      tours,
-    },
-  });
-});
+//   respond.status(200).json({
+//     status: 'Success',
+//     result: tours.length,
+//     data: {
+//       tours,
+//     },
+//   });
+// });
+
+//method for get all tours
+exports.getAllTours = factory.getAll(Tour);
 
 //method for get single tour
-exports.getSingleTour = catchAsyncError(async (request, respond, next) => {
-  const tour = await Tour.findById(request.params.id).populate('reviews');
+// exports.getSingleTour = catchAsyncError(async (request, respond, next) => {
+//   const tour = await Tour.findById(request.params.id).populate('reviews');
 
-  if (!tour) {
-    return next(
-      new AppError(`No tour found with ID ${request.params.id}`, 404)
-    );
-  }
-  respond.status(200).json({
-    status: 'Success',
-    data: {
-      tour,
-    },
-  });
-});
+//   if (!tour) {
+//     return next(
+//       new AppError(`No tour found with ID ${request.params.id}`, 404)
+//     );
+//   }
+//   respond.status(200).json({
+//     status: 'Success',
+//     data: {
+//       tour,
+//     },
+//   });
+// });
+
+//method for get single tour
+exports.getSingleTour = factory.getOne(Tour, { path: 'reviews' });
 
 //method for create new tour
 // exports.createTour = catchAsyncError(async (request, respond, next) => {
