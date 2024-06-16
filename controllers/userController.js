@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsyncError = require('../utils/catchAsyncError');
+const factory = require('./handlerFactory');
 
 const filteredObj = (object, ...requestFields) => {
   const newObject = {};
@@ -11,37 +12,14 @@ const filteredObj = (object, ...requestFields) => {
   return newObject;
 };
 
-exports.getAllUsers = catchAsyncError(async (request, respond) => {
-  //execute query
-  const users = await User.find();
-
-  respond.status(200).json({
-    status: 'Success',
-    result: users.length,
-    data: {
-      users,
-    },
-  });
-});
-exports.getSingleUser = (request, respond) => {
-  respond.status(500).json({
-    status: 'Error',
-    message: 'This route is not yet implemented.',
-  });
+exports.getCurrentInfo = (request, respond, next) => {
+  request.params.id = request.user.id;
+  next()
 };
-exports.createUser = (request, respond) => {
-  respond.status(500).json({
-    status: 'Error',
-    message: 'This route is not yet implemented.',
-  });
-};
-
-exports.updateUserAdmin = (request, respond) => {
-  respond.status(500).json({
-    status: 'Error',
-    message: 'This route is not yet implemented.',
-  });
-};
+exports.getAllUsers = factory.getAll(User);
+exports.getSingleUser = factory.getOne(User);
+exports.updateUserAdmin = factory.updateOne(User);
+exports.deleteUserAdmin = factory.deleteOne(User);
 
 exports.updateUserSelf = catchAsyncError(async (request, respond, next) => {
   //if user send password to update will prompt error
@@ -67,13 +45,6 @@ exports.updateUserSelf = catchAsyncError(async (request, respond, next) => {
     data: { user: updatedUser },
   });
 });
-
-exports.deleteUser = (request, respond) => {
-  respond.status(500).json({
-    status: 'Error',
-    message: 'This route is not yet implemented.',
-  });
-};
 
 exports.deleteUserSelf = catchAsyncError(async (request, respond, next) => {
   await User.findByIdAndUpdate(request.user.id, { active: false });

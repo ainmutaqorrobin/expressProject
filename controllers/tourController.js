@@ -1,7 +1,6 @@
 const Tour = require('../models/tourModel');
-const APIFeatures = require('../utils/apiFeatures');
 const catchAsyncError = require('../utils/catchAsyncError');
-const AppError = require('../utils/appError');
+const factory = require('./handlerFactory');
 
 //alias for get top tours
 exports.aliasTopTours = (request, respond, next) => {
@@ -11,86 +10,11 @@ exports.aliasTopTours = (request, respond, next) => {
   next();
 };
 
-//method for get all tours
-exports.getAllTours = catchAsyncError(async (request, respond, next) => {
-  //execute query
-  const features = new APIFeatures(Tour.find(), request.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .pagination();
-  const tours = await features.query;
-
-  respond.status(200).json({
-    status: 'Success',
-    result: tours.length,
-    data: {
-      tours,
-    },
-  });
-});
-
-//method for get single tour
-exports.getSingleTour = catchAsyncError(async (request, respond, next) => {
-  const tour = await Tour.findById(request.params.id);
-
-  if (!tour) {
-    return next(
-      new AppError(`No tour found with ID ${request.params.id}`, 404)
-    );
-  }
-  respond.status(200).json({
-    status: 'Success',
-    data: {
-      tour,
-    },
-  });
-});
-
-//method for create new tour
-exports.createTour = catchAsyncError(async (request, respond, next) => {
-  const newTour = await Tour.create(request.body);
-
-  respond.status(201).json({
-    status: 'Successfull created new tour.',
-    data: {
-      tour: newTour,
-    },
-  });
-});
-
-//method for update tour
-exports.updateTour = catchAsyncError(async (request, respond, next) => {
-  const tour = await Tour.findByIdAndUpdate(request.params.id, request.body, {
-    new: true,
-    //mongoose will run again the validators every update
-    runValidators: true,
-  });
-  if (!tour) {
-    return next(
-      new AppError(`No tour found with ID ${request.params.id}`, 404)
-    );
-  }
-  respond.status(200).json({
-    status: 'Successfull update tour.',
-    data: {
-      tour: tour,
-    },
-  });
-});
-
-//method for delete tour
-exports.deleteTour = catchAsyncError(async (request, respond, next) => {
-  const tour = await Tour.findByIdAndDelete(request.params.id);
-  if (!tour) {
-    return next(
-      new AppError(`No tour found with ID ${request.params.id}`, 404)
-    );
-  }
-  respond.status(204).json({
-    status: 'Tour deleted successfully.',
-  });
-});
+exports.getAllTours = factory.getAll(Tour);
+exports.getSingleTour = factory.getOne(Tour, { path: 'reviews' });
+exports.createTour = factory.createOne(Tour);
+exports.updateTour = factory.updateOne(Tour);
+exports.deleteTour = factory.deleteOne(Tour);
 
 exports.getTourStats = catchAsyncError(async (request, respond, next) => {
   try {
