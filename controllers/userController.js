@@ -12,6 +12,10 @@ const filteredObj = (object, ...requestFields) => {
   return newObject;
 };
 
+exports.getCurrentInfo = (request, respond, next) => {
+  request.params.id = request.user.id;
+  next()
+};
 exports.getAllUsers = factory.getAll(User);
 exports.getSingleUser = factory.getOne(User);
 exports.updateUserAdmin = factory.updateOne(User);

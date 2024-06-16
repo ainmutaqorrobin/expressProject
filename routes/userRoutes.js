@@ -7,6 +7,7 @@ const {
   deleteUserAdmin,
   updateUserSelf,
   deleteUserSelf,
+  getCurrentInfo,
 } = require('../controllers/userController');
 
 const {
@@ -29,6 +30,7 @@ router.delete('/deleteUserSelf', checkAuthentication, deleteUserSelf);
 router.patch('/resetPassword/:token', resetPassword);
 
 router.route('/').get(getAllUsers);
+router.route('/me').get(checkAuthentication, getCurrentInfo, getSingleUser);
 router
   .route('/:id')
   .get(getSingleUser)
