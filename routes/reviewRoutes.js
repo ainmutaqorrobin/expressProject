@@ -14,15 +14,17 @@ const {
   getSingleReview,
 } = require('../controllers/reviewController');
 
+router.use(checkAuthentication);
+
 router
   .route('/')
   .get(getAllReview)
-  .post(checkAuthentication, restrictTo('user'), setTourUserIds, createReview);
+  .post(restrictTo('user'), setTourUserIds, createReview);
 
 router
   .route('/:id')
   .get(getSingleReview)
-  .delete(deleteReview)
-  .patch(updateReview);
+  .delete(restrictTo('user', 'admin'), deleteReview)
+  .patch(restrictTo('user', 'admin'), updateReview);
 
 module.exports = router;

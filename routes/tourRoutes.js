@@ -20,14 +20,27 @@ const reviewRouter = require('../routes/reviewRoutes');
 router.use('/:tourId/reviews', reviewRouter);
 
 // router.param('id', validateID);
-router.route('/').get(checkAuthentication, getAllTours).post(createTour);
+router
+  .route('/')
+  .get(getAllTours)
+  .post(checkAuthentication, restrictTo('admin', 'lead-guide'), createTour);
+
 router.route('/tour-stats').get(getTourStats);
-router.route('/monthly-stats/:year').get(getMonthlyStats);
+
+router
+  .route('/monthly-stats/:year')
+  .get(
+    checkAuthentication,
+    restrictTo('admin', 'lead-guide', 'guide'),
+    getMonthlyStats
+  );
+
 router.route('/top-5-tours').get(aliasTopTours, getAllTours);
+
 router
   .route('/:id')
   .get(getSingleTour)
-  .patch(updateTour)
+  .patch(checkAuthentication, restrictTo('admin', 'lead-guide'), updateTour)
   .delete(checkAuthentication, restrictTo('admin', 'lead-guide'), deleteTour);
 
 module.exports = router;

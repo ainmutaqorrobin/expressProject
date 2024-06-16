@@ -22,15 +22,21 @@ const {
 
 router.post('/signup', signUp);
 router.post('/login', login);
-
 router.post('/forgotPassword', forgotPassword);
-router.patch('/updatePassword', checkAuthentication, updatePassword);
-router.patch('/updateUserSelf', checkAuthentication, updateUserSelf);
-router.delete('/deleteUserSelf', checkAuthentication, deleteUserSelf);
 router.patch('/resetPassword/:token', resetPassword);
 
+//use checkAuthentication handler as authentication middleware for remaining routes
+router.use(checkAuthentication);
+
+router.patch('/updatePassword', updatePassword);
+router.patch('/updateUserSelf', updateUserSelf);
+router.delete('/deleteUserSelf', deleteUserSelf);
+router.route('/me').get(getCurrentInfo, getSingleUser);
+
+//use restrictTo  handler as authorization middleware for remaining routes
+router.use(restrictTo('admin'));
+
 router.route('/').get(getAllUsers);
-router.route('/me').get(checkAuthentication, getCurrentInfo, getSingleUser);
 router
   .route('/:id')
   .get(getSingleUser)
