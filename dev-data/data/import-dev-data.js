@@ -24,7 +24,7 @@ const reviews = JSON.parse(
   fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8')
 );
 //IMPORT tours to DB
-const importTours = async () => {
+const importData = async () => {
   try {
     await Tour.create(tours);
     await User.create(users, { validateBeforeSave: false });
@@ -38,7 +38,7 @@ const importTours = async () => {
 };
 
 //DELETE EXISTED COLLECTION IN DB
-const deleteTour = async () => {
+const deleteData = async () => {
   try {
     await Tour.deleteMany();
     await User.deleteMany();
@@ -52,8 +52,8 @@ const deleteTour = async () => {
 };
 
 if (process.argv[2] === '--import') {
-  importTours();
+  importData();
 } else if (process.argv[2] === '--delete') {
-  deleteTour();
+  deleteData();
 }
 console.log(process.argv);
