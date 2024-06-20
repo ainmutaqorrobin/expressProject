@@ -9,6 +9,7 @@ const {
   aliasTopTours,
   getTourStats,
   getMonthlyStats,
+  getToursGeolocation,
 } = require('../controllers/tourController');
 const {
   checkAuthentication,
@@ -18,6 +19,10 @@ const {
 const reviewRouter = require('../routes/reviewRoutes');
 
 router.use('/:tourId/reviews', reviewRouter);
+
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(getToursGeolocation);
 
 // router.param('id', validateID);
 router
