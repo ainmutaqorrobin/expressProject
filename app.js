@@ -65,6 +65,10 @@ app.use((request, respond, next) => {
 });
 
 //routes
+app.get('/', (request, respond) => {
+  respond.status(200).render('base');
+});
+
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
