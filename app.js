@@ -66,7 +66,10 @@ app.use((request, respond, next) => {
 
 //routes
 app.get('/', (request, respond) => {
-  respond.status(200).render('base');
+  respond.status(200).render('base', {
+    tour: 'The Forest Hiker',
+    user: 'Mutaqorrobin',
+  });
 });
 
 app.use('/api/v1/tours', tourRouter);
