@@ -118,7 +118,11 @@ exports.getToursGeolocation = catchAsyncError(
     }
 
     const tours = await Tour.find({
-      startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+      startLocation: {
+        $geoWithin: {
+          $centerSphere: [[lng, lat], radius],
+        },
+      },
     });
 
     respond.status(200).json({
@@ -130,3 +134,45 @@ exports.getToursGeolocation = catchAsyncError(
     });
   }
 );
+
+exports.getToursDistances = catchAsyncError(async (request, respond, next) => {
+  const { latlng, unit } = request.params;
+  const [lat, lng] = latlng.split(',');
+
+  const converter = unit === 'mi' ? 0.000621371 : 0.001;
+
+  if (!lat || !lng) {
+    next(
+      new AppError(
+        'Please provide latitude and longitude in format lat,lng',
+        400
+      )
+    );
+  }
+
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [+lng, +lat],
+        },
+        distanceField: 'distance',
+        distanceMultiplier: converter,
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        distance: 1,
+      },
+    },
+  ]);
+
+  respond.status(200).json({
+    status: 'Success',
+    data: {
+      data: distances,
+    },
+  });
+});

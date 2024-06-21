@@ -153,11 +153,11 @@ tourSchema.post(/^find/, function (document, next) {
 
 //AGGREGATION MIDDLEWARE
 
-tourSchema.pre('aggregate', function (next) {
-  //using unshift because match in pipeline is the first element.
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//   //using unshift because match in pipeline is the first element.
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 
