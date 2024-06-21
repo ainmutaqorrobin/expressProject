@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-//=========================== COMMENT THIS MIDDLEWARE BEFORE IMPORTING USERS DUMMY DATA =========================== 
+//=========================== COMMENT THIS MIDDLEWARE BEFORE IMPORTING USERS DUMMY DATA ===========================
 userSchema.pre('save', async function (next) {
   //Only run the function if password was actually modified.
   if (!this.isModified('password')) return next();
@@ -73,7 +73,7 @@ userSchema.pre(/^find/, function (next) {
   this.find({ active: { $ne: false } });
   next();
 });
-//=========================== COMMENT THIS MIDDLEWARE BEFORE IMPORTING USERS DUMMY DATA =========================== 
+//=========================== COMMENT THIS MIDDLEWARE BEFORE IMPORTING USERS DUMMY DATA ===========================
 
 userSchema.methods.checkingPassword = async function (
   enteredPassword,
@@ -100,8 +100,6 @@ userSchema.methods.createPasswordResetToken = function () {
 
   //expired within 10 minutes
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-  console.log({ resetToken }, this.passwordResetToken);
-
   return resetToken;
 };
 

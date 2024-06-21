@@ -57,7 +57,6 @@ app.use(express.static(`${__dirname}/public`));
 //test middleware
 app.use((request, respond, next) => {
   request.requestTime = new Date().toISOString();
-  // console.log(request.headers);
   next();
 });
 
