@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -11,6 +12,12 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const app = express();
+
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+//read static file
+app.use(express.static(path.join(__dirname, 'public')));
 
 //to make HTTP Header secured
 app.use(helmet());
@@ -50,9 +57,6 @@ app.use(
     ],
   })
 );
-
-//read static file
-app.use(express.static(`${__dirname}/public`));
 
 //test middleware
 app.use((request, respond, next) => {
