@@ -8,6 +8,7 @@ const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
@@ -65,25 +66,8 @@ app.use((request, respond, next) => {
 });
 
 //routes
-app.get('/', (request, respond) => {
-  respond.status(200).render('base', {
-    tour: 'The Forest Hiker',
-    user: 'Mutaqorrobin',
-  });
-});
 
-app.get('/overview', (request,respond)=> {
-  respond.status(200).render('overview', {
-    title: 'All tours'
-  })
-})
-
-app.get('/tour', (request, respond) => {
-  respond.status(200).render('tour', {
-    title: 'The Forest Hiker',
-  });
-});
-
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
