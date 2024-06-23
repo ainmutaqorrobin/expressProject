@@ -1177,7 +1177,7 @@ body {
   font-weight: 700;
 }
 .card__footer-text {
-  color: #999;
+  color: #000000;
 }
 .card__ratings {
   grid-row: 2 / 3;
