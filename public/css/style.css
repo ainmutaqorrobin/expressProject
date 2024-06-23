@@ -830,6 +830,7 @@ body {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  justify-content: flex-end;
 }
 .footer__nav li {
   margin-left: 1.5rem;
@@ -1176,7 +1177,7 @@ body {
   font-weight: 700;
 }
 .card__footer-text {
-  color: #999;
+  color: #000000;
 }
 .card__ratings {
   grid-row: 2 / 3;

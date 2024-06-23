@@ -51,6 +51,7 @@ const deleteData = async () => {
   process.exit();
 };
 
+//Please ensure that you commenting User middleware in the User Model
 if (process.argv[2] === '--import') {
   importData();
 } else if (process.argv[2] === '--delete') {
