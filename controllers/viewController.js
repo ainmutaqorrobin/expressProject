@@ -21,3 +21,7 @@ exports.getTour = catchAsyncError(async (request, respond, next) => {
     tour,
   });
 });
+
+exports.getLoginForm = (request, respond, next) => {
+  respond.status(200).render('login', {title:'Login'});
+};
