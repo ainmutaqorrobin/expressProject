@@ -1,5 +1,9 @@
 const express = require('express');
-const { getOverview, getTour, getLoginForm } = require('../controllers/viewController');
+const {
+  getOverview,
+  getTour,
+  getLoginForm,
+} = require('../controllers/viewController');
 const router = express.Router();
 
 router.get('/', getOverview);
