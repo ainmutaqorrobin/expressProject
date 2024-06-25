@@ -17,7 +17,7 @@ exports.getTour = catchAsyncError(async (request, respond, next) => {
   });
 
   respond.status(200).render('tour', {
-    title: 'The Forest Hiker Tour',
+    title: tour.name,
     tour,
   });
 });
