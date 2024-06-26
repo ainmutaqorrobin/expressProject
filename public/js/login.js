@@ -1,7 +1,6 @@
 const login = async (email, password) => {
-  console.log(email, password);
   try {
-    const result = await axios({
+    const respond = await axios({
       method: 'POST',
       url: '/api/v1/users/login',
       data: {
@@ -9,9 +8,15 @@ const login = async (email, password) => {
         password,
       },
     });
-    console.log(result);
+
+    if (respond.data.status === 'Successful.') {
+      alert('Logged in sucessfully');
+      window.setTimeout(() => {
+        location.assign('/');
+      }, 1500);
+    }
   } catch (err) {
-    console.log(err.response.data);
+    alert(err.response.data.message);
   }
 };
 
