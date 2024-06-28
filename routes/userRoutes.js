@@ -18,9 +18,11 @@ const {
   updatePassword,
   checkAuthentication,
   restrictTo,
+  logout,
 } = require('../controllers/authController');
 
 router.post('/signup', signUp);
+router.get('/logout', logout);
 router.post('/login', login);
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);

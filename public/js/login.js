@@ -18,7 +18,21 @@ export const login = async (email, password) => {
         location.assign('/');
       }, 1500);
     }
-  } catch (err) {
+  } catch (error) {
+    showAlert('error', 'Error login! Try again.');
+  }
+};
+
+export const logout = async () => {
+  try {
+    const respond = await axios({
+      method: 'GET',
+      url: '/api/v1/users/logout',
+    });
+
+    if ((respond.data.status = 'Success')) location.reload(true);
+  } catch (error) {
+    console.log(error.response);
     showAlert('error', 'Error logging out! Try again.');
   }
 };
