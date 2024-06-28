@@ -24,30 +24,55 @@ const handleTokenExpiredError = (error) =>
   new AppError('Your token has expired! Please login back again!', 401);
 
 //error handling middleware
-const sendErrorDev = (error, respond) => {
-  respond.status(error.statusCode).json({
-    status: error.status,
-    error: error,
+const sendErrorDev = (error, request, respond) => {
+  //API error
+  if (request.originalUrl.startsWith('/api')) {
+    return respond.status(error.statusCode).json({
+      status: error.status,
+      error: error,
+      message: error.message,
+      stack: error.stack,
+    });
+  }
+  //render error page
+  return respond.status(error.statusCode).render('error', {
+    title: 'Something went wrong!',
     message: error.message,
-    stack: error.stack,
   });
 };
 
-const sendErrorProduction = (error, respond) => {
-  //send the respond if user make wrong request
-  if (error.isOperationalError) {
-    respond.status(error.statusCode).json({
-      status: error.status,
-      message: error.message,
-    });
-  } else {
+const sendErrorProduction = (error, request, respond) => {
+  //API error
+  if (request.originalUrl.startsWith('/api')) {
+    if (error.isOperationalError) {
+      return respond.status(error.statusCode).json({
+        status: error.status,
+        message: error.message,
+      });
+    }
     //send the formal respond if there are bug from the application itself
     console.error('ERROR ', error);
-    respond.status(500).json({
-      status: 'Error.',
-      message: 'Something is wrong with the application.',
+
+    //send the respond if unknown error
+    return respond.status(500).json({
+      title: 'error',
+      message: 'Please try again later.',
     });
   }
+  //render error page
+  if (error.isOperationalError) {
+    console.log(error);
+    return respond.status(error.statusCode).render('error', {
+      title: 'Something went wrong!',
+      message: error.message,
+    });
+  }
+
+  console.error('ERROR ', error);
+  return respond.status(error.statusCode).render('error', {
+    title: 'Something went wrong!',
+    message: 'Please try again later',
+  });
 };
 
 module.exports = (error, request, respond, next) => {
@@ -55,15 +80,16 @@ module.exports = (error, request, respond, next) => {
   error.status = error.status || 'Error';
 
   if (process.env.NODE_ENV === 'development') {
-    sendErrorDev(error, respond);
+    sendErrorDev(error, request, respond);
   } else if (process.env.NODE_ENV === 'production') {
     let err = { ...error };
+    err.message = error.message;
     if (error.name === 'CastError') err = handleCastErrorDB(err);
     if (error.code === 11000) err = handleDuplicateFieldDB(err);
     if (error.name === 'ValidationError') err = handleValidationErrorDB(err);
     if (error.name === 'JsonWebTokenError') err = handleJWTError(err);
     if (error.name === 'TokenExpiredError') err = handleTokenExpiredError(err);
-    
-    sendErrorProduction(err, respond);
+
+    sendErrorProduction(err, request, respond);
   }
 };
