@@ -11,7 +11,17 @@ exports.getOverview = catchAsyncError(async (request, respond, next) => {
 });
 
 exports.getTour = catchAsyncError(async (request, respond, next) => {
+  const tour = await Tour.findOne({ slug: request.params.slug }).populate({
+    path: 'reviews',
+    fields: 'review rating user',
+  });
+
   respond.status(200).render('tour', {
-    title: 'The Forest Hiker Tour',
+    title: tour.name,
+    tour,
   });
 });
+
+exports.getLoginForm = (request, respond, next) => {
+  respond.status(200).render('login', { title: 'Login' });
+};
