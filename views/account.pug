@@ -29,6 +29,11 @@ block content
       .user-view__content
         .user-view__form-container
           h2.heading-secondary.ma-bt-md Your account settings
+
+          //-Without API
+          //- form.form.form-user-data(action='/submit-user-data' method='POST')
+
+          //-With API
           form.form.form-user-data
             .form__group
               label.form__label(for='name') Name
@@ -47,12 +52,12 @@ block content
           form.form.form-user-settings
             .form__group
               label.form__label(for='password-current') Current password
-              input#password-current.form__input(type='password', placeholder='••••••••', required, minlength='8')
+              input#password-current.form__input(type='password', placeholder='current password', required, minlength='8')
             .form__group
               label.form__label(for='password') New password
-              input#password.form__input(type='password', placeholder='••••••••', required, minlength='8')
+              input#password.form__input(type='password', placeholder='new password', required, minlength='8')
             .form__group.ma-bt-lg
               label.form__label(for='password-confirm') Confirm password
-              input#password-confirm.form__input(type='password', placeholder='••••••••', required, minlength='8')
+              input#password-confirm.form__input(type='password', placeholder='new password', required, minlength='8')
             .form__group.right
-              button.btn.btn--small.btn--green Save password
+              button.btn.btn--small.btn--green.btn--save-password Save password
