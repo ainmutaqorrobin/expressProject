@@ -18,7 +18,7 @@ exports.getTour = catchAsyncError(async (request, respond, next) => {
   });
 
   if (!tour) return next(new AppError('There is no tour found.', 404));
-  
+
   respond.status(200).render('tour', {
     title: tour.name,
     tour,
@@ -27,4 +27,10 @@ exports.getTour = catchAsyncError(async (request, respond, next) => {
 
 exports.getLoginForm = (request, respond, next) => {
   respond.status(200).render('login', { title: 'Login' });
+};
+
+exports.getAccount = (request, respond) => {
+  respond.status(200).render('account', {
+    title: 'Your account',
+  });
 };

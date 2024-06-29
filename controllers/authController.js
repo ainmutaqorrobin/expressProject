@@ -120,6 +120,7 @@ exports.checkAuthentication = catchAsyncError(
     }
 
     request.user = userFromToken;
+    respond.locals.user = userFromToken;
     next();
   }
 );
