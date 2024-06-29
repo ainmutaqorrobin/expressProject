@@ -12,14 +12,14 @@ export const login = async (email, password) => {
       },
     });
 
-    if (respond.data.status === 'Successful.') {
+    if (respond.data.status === 'Success.') {
       showAlert('success', 'Logged in sucessfully!');
       window.setTimeout(() => {
         location.assign('/');
       }, 1500);
     }
   } catch (error) {
-    showAlert('error', 'Error login! Try again.');
+    showAlert('error', error.response.data.message);
   }
 };
 
