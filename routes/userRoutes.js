@@ -1,5 +1,4 @@
 const express = require('express');
-const multer = require('multer');
 const router = express.Router();
 const {
   getAllUsers,
@@ -9,6 +8,7 @@ const {
   updateUserSelf,
   deleteUserSelf,
   getCurrentInfo,
+  uploadUserPhoto,
 } = require('../controllers/userController');
 
 const {
@@ -22,8 +22,6 @@ const {
   logout,
 } = require('../controllers/authController');
 
-const imgUpload = multer({ destination: '/public/img/users' });
-
 router.post('/signup', signUp);
 router.get('/logout', logout);
 router.post('/login', login);
@@ -34,7 +32,7 @@ router.patch('/resetPassword/:token', resetPassword);
 router.use(checkAuthentication);
 
 router.patch('/updatePassword', updatePassword);
-router.patch('/updateUserSelf', imgUpload.single('photo'), updateUserSelf);
+router.patch('/updateUserSelf', uploadUserPhoto, updateUserSelf);
 router.delete('/deleteUserSelf', deleteUserSelf);
 router.route('/me').get(getCurrentInfo, getSingleUser);
 
