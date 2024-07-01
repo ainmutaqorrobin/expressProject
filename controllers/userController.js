@@ -45,8 +45,6 @@ exports.updateUserAdmin = factory.updateOne(User);
 exports.deleteUserAdmin = factory.deleteOne(User);
 
 exports.updateUserSelf = catchAsyncError(async (request, respond, next) => {
-  console.log(request.file);
-  console.log(request.body);
   //if user send password to update will prompt error
   if (request.body.password || request.body.passwordConfirm) {
     return next(
@@ -57,6 +55,8 @@ exports.updateUserSelf = catchAsyncError(async (request, respond, next) => {
     );
   }
   const filteredBody = filteredObj(request.body, 'name', 'email');
+  if (request.file) filteredBody.photo = request.file.filename;
+  
   const updatedUser = await User.findByIdAndUpdate(
     request.user.id,
     filteredBody,
