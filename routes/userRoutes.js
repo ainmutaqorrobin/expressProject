@@ -9,6 +9,7 @@ const {
   deleteUserSelf,
   getCurrentInfo,
   uploadUserPhoto,
+  resizeUserPhoto,
 } = require('../controllers/userController');
 
 const {
@@ -32,7 +33,12 @@ router.patch('/resetPassword/:token', resetPassword);
 router.use(checkAuthentication);
 
 router.patch('/updatePassword', updatePassword);
-router.patch('/updateUserSelf', uploadUserPhoto, updateUserSelf);
+router.patch(
+  '/updateUserSelf',
+  uploadUserPhoto,
+  resizeUserPhoto,
+  updateUserSelf
+);
 router.delete('/deleteUserSelf', deleteUserSelf);
 router.route('/me').get(getCurrentInfo, getSingleUser);
 
