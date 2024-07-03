@@ -30,10 +30,13 @@ if (logOutButton) logOutButton.addEventListener('click', logout);
 if (updateUserData) {
   updateUserData.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
+    const form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo').files[0]);
+    console.log(form);
 
-    await updateData({ name, email }, 'data');
+    await updateData(form, 'data');
   });
 }
 
