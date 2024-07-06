@@ -3,18 +3,18 @@ import { login, logout } from './login';
 import { displayMap } from './mapbox';
 import { updateData } from './updateProfile';
 
-const mapBox = document.getElementById('map');
+// const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form');
 const logOutButton = document.querySelector('.nav__el--logout');
 const updateUserData = document.querySelector('.form-user-data');
 const updateUserPassword = document.querySelector('.form-user-settings');
 
-if (mapBox) {
-  const locations = JSON.parse(
-    document.getElementById('map').dataset.locations
-  );
-  displayMap(locations);
-}
+// if (mapBox) {
+//   const locations = JSON.parse(
+//     document.getElementById('map').dataset.locations
+//   );
+//   displayMap(locations);
+// }
 
 if (loginForm) {
   loginForm.addEventListener('submit', (event) => {
