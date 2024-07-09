@@ -185,12 +185,7 @@ exports.forgotPassword = catchAsyncError(async (request, respond, next) => {
   const message = `Forgot your password? Submit a PATCH request with new password and confirm password to ${resetURL}.\nIf you didn't forget your password, please ignore this email.`;
 
   try {
-    // await sendEmail({
-    //   email: user.email,
-    //   subject: 'Your password reset token (valid for 10 min)',
-    //   message,
-    // });
-
+    await new Email(user, resetURL).sendPasswordReset();
     respond.status(200).json({
       status: 'success',
       message: 'Token has been sent to email!',

@@ -57,4 +57,8 @@ module.exports = class Email {
       'Welcome to the Robin Tours Travel Web Application!'
     );
   }
+
+  async sendPasswordReset() {
+    await this.send('passwordReset','Your password reset token (valid for 10 minutes)')
+  }
 };
