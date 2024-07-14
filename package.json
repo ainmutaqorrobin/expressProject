@@ -23,6 +23,7 @@
   "homepage": "https://github.com/ainmutaqorrobin/expressProject#readme",
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
+    "@stripe/stripe-js": "^4.1.0",
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",

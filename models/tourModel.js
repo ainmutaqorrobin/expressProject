@@ -141,8 +141,8 @@ tourSchema.pre(/^find/, function (next) {
 });
 
 tourSchema.post(/^find/, function (document, next) {
-  console.log(`Query tooks  + ${Date.now() - this.start}  miliseconds`);
-  console.log(document);
+  // console.log(`Query tooks  + ${Date.now() - this.start}  miliseconds`);
+  // console.log(document);
   next();
 });
 
