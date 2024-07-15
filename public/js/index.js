@@ -2,19 +2,21 @@ import '@babel/polyfill';
 import { login, logout } from './login';
 import { displayMap } from './mapbox';
 import { updateData } from './updateProfile';
+import { bookTour } from './stripe';
 
-const mapBox = document.getElementById('map');
+// const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form');
 const logOutButton = document.querySelector('.nav__el--logout');
 const updateUserData = document.querySelector('.form-user-data');
 const updateUserPassword = document.querySelector('.form-user-settings');
+const bookButton = document.getElementById('book-tour');
 
-if (mapBox) {
-  const locations = JSON.parse(
-    document.getElementById('map').dataset.locations
-  );
-  displayMap(locations);
-}
+// if (mapBox) {
+//   const locations = JSON.parse(
+//     document.getElementById('map').dataset.locations
+//   );
+//   displayMap(locations);
+// }
 
 if (loginForm) {
   loginForm.addEventListener('submit', (event) => {
@@ -30,10 +32,13 @@ if (logOutButton) logOutButton.addEventListener('click', logout);
 if (updateUserData) {
   updateUserData.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
+    const form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo').files[0]);
+    console.log(form);
 
-    await updateData({ name, email }, 'data');
+    await updateData(form, 'data');
   });
 }
 
@@ -52,5 +57,13 @@ if (updateUserPassword) {
     document.getElementById('password-current').value = '';
     document.getElementById('password').value = '';
     document.getElementById('password-confirm').value = '';
+  });
+}
+
+if (bookButton) {
+  bookButton.addEventListener('click', (event) => {
+    event.target.textContent = 'Processing...';
+    const { tourId } = event.target.dataset;
+    bookTour(tourId);
   });
 }

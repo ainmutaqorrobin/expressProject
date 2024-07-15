@@ -11,6 +11,8 @@ const {
   getMonthlyStats,
   getToursGeolocation,
   getToursDistances,
+  resizeTourImages,
+  uploadTourImages,
 } = require('../controllers/tourController');
 const {
   checkAuthentication,
@@ -48,7 +50,13 @@ router.route('/top-5-tours').get(aliasTopTours, getAllTours);
 router
   .route('/:id')
   .get(getSingleTour)
-  .patch(checkAuthentication, restrictTo('admin', 'lead-guide'), updateTour)
+  .patch(
+    checkAuthentication,
+    restrictTo('admin', 'lead-guide'),
+    uploadTourImages,
+    resizeTourImages,
+    updateTour
+  )
   .delete(checkAuthentication, restrictTo('admin', 'lead-guide'), deleteTour);
 
 module.exports = router;

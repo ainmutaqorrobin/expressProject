@@ -2,7 +2,7 @@ const User = require('../models/userModel');
 const catchAsyncError = require('../utils/catchAsyncError');
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/appError');
-const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 const { promisify } = require('util');
 const crypto = require('crypto');
 
@@ -44,6 +44,9 @@ exports.signUp = catchAsyncError(async (request, respond, next) => {
     passwordChangeAt: request.body.passwordChangeAt,
     role: request.body.role,
   });
+  const url = `${request.protocol}://${request.get('host')}/me`;
+  console.log(url);
+  await new Email(newUser, url).sendWelcome();
   createSendToken(newUser, 201, respond);
 });
 
@@ -182,12 +185,7 @@ exports.forgotPassword = catchAsyncError(async (request, respond, next) => {
   const message = `Forgot your password? Submit a PATCH request with new password and confirm password to ${resetURL}.\nIf you didn't forget your password, please ignore this email.`;
 
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Your password reset token (valid for 10 min)',
-      message,
-    });
-
+    await new Email(user, resetURL).sendPasswordReset();
     respond.status(200).json({
       status: 'success',
       message: 'Token has been sent to email!',
