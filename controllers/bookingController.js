@@ -29,29 +29,8 @@ exports.getCheckoutSession = catchAsyncError(async (request, respond, next) => {
       },
     ],
   });
-  // const session = await stripe.checkout.sessions.create({
-  //   payment_method_types: ['card'],
-  //   success_url: `${request.protocol}://${request.get('host')}/my-tours/?tour=${
-  //     request.params.tourId
-  //   }&user=${request.user.id}&price=${tour.price}`,
-  //   cancel_url: `${request.protocol}://${request.get('host')}/tour/${
-  //     tour.slug
-  //   }`,
-  //   customer_email: request.user.email,
-  //   client_reference_id: request.params.tourId,
-  //   line_items: [
-  //     {
-  //       name: `${tour.name} Tour`,
-  //       description: tour.summary,
-  //       images: [`https://www.natours.dev/img/tours/${tour.imageCover}`],
-  //       amount: tour.price * 100,
-  //       currency: 'usd',
-  //       quantity: 1,
-  //     },
-  //   ],
-  // });
-  //create session as respond
-  respond.status(200).json({
+  
+ respond.status(200).json({
     status: 'success',
     session,
   });
