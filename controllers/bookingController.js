@@ -1,4 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const Booking = require('../models/bookingModel');
 const Tour = require('../models/tourModel');
 const catchAsyncError = require('../utils/catchAsyncError');
 
@@ -8,7 +9,10 @@ exports.getCheckoutSession = catchAsyncError(async (request, respond, next) => {
   //create checkout session
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
-    success_url: `${request.protocol}://${request.get('host')}/`,
+    //not secured url but temporary
+    success_url: `${request.protocol}://${request.get('host')}/?tour=${
+      request.params.tourId
+    }&user=${request.user.id}&price=${tour.price}`,
     cancel_url: `${request.protocol}://${request.get('host')}/tour/${
       tour.slug
     }`,
@@ -29,9 +33,21 @@ exports.getCheckoutSession = catchAsyncError(async (request, respond, next) => {
       },
     ],
   });
-  
- respond.status(200).json({
+
+  respond.status(200).json({
     status: 'success',
     session,
   });
 });
+
+exports.createBookingCheckout = catchAsyncError(
+  async (request, respond, next) => {
+    //temporary middleware (not secured)
+    const { tour, user, price } = request.query;
+
+    if (!tour && !user && !price) return next();
+    await Booking.create({ tour, user, price });
+
+    respond.redirect(request.originalUrl.split('?')[0]);
+  }
+);
